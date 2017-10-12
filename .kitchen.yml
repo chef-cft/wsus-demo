@@ -3,16 +3,16 @@ driver:
   name: azurerm
 
 driver_config:
-  subscription_id: 'e6b872d2-4d5a-42aa-9ac9-8f5e03f556dc'
+  subscription_id: '00000000-YOUR-GUID-HERE-000000000000'
   location: 'Central US'
-  machine_size: 'Standard_D1'
+  machine_size: ''Standard_D3_v2''
 
 provisioner:
   name: chef_zero
   retry_on_exit_code: 
-    - [35, 37, 41, 1]
+    - [35, 37, 41]
   max_retries: 15
-  wait_for_retry: 60  
+  wait_for_retry: 600  
   client_rb:
     exit_status: enabled
     client_fork: false 
@@ -58,5 +58,5 @@ suites:
       # as kitchen-[driver UUID].[location].cloudapp.azure.com 
       # the UUID can be found in .kitchen/server-windows2012-r2.yml
       # Don't forget to include 'http://' and ':8530' in the WSUS server string
-        wsus_server: "http://kitchen-9ac9b814b2bb8c44.centralus.cloudapp.azure.com:8530"
+        wsus_server: "http://kitchen-87c454246ba8713e.centralus.cloudapp.azure.com:8530"
       

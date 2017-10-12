@@ -9,12 +9,13 @@ Update .kitchen.yml with your Azure subscription details per [kitchen-azurerm](h
 driver_config:
   subscription_id: '00000000-YOUR-GUID-HERE-000000000000'
   location: 'Central US'
-  machine_size: 'Standard_D1'
+  machine_size: 'Standard_D3_v2'
 ```
 
 **NOTE: The WSUS Server takes ~30 minutes to spin up**
 
 Before showing someone, make sure you stand up the WSUS server as it takes a while to download the updates
+* Run `kitchen create` so that all machines are ready
 * Run `kitchen converge server`
 * Update `kitchen.yml` 
     * Update `image_urn` if needed for platform `windows-2012r2-old`
@@ -76,3 +77,5 @@ Before showing someone, make sure you stand up the WSUS server as it takes a whi
 
 ## TO DO:
 * Add a suite with a client that has a scheduled install for patches instead of on demand
+* Add InSpec profile to validate connection to appropriate WSUS server
+* Integrate with BJC
