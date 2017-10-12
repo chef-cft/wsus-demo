@@ -1,26 +1,62 @@
 ---
 driver:
-  name: vagrant
+  name: azurerm
+
+driver_config:
+  subscription_id: 'e6b872d2-4d5a-42aa-9ac9-8f5e03f556dc'
+  location: 'Central US'
+  machine_size: 'Standard_D1'
 
 provisioner:
   name: chef_zero
-  # You may wish to disable always updating cookbooks in CI or other testing environments.
-  # For example:
-  #   always_update_cookbooks: <%= !ENV['CI'] %>
-  always_update_cookbooks: true
-
-verifier:
-  name: inspec
+  retry_on_exit_code: 
+    - [35, 37, 41, 1]
+  max_retries: 15
+  wait_for_retry: 60  
+  client_rb:
+    exit_status: enabled
+    client_fork: false 
 
 platforms:
-  - name: ubuntu-16.04
-  - name: centos-7
+  - name: windows2012-r2-latest
+    driver_config:
+      image_urn: MicrosoftWindowsServer:WindowsServer:2012-R2-Datacenter:latest
+      vm_name: 2012r2-latest
+    transport:
+      name: winrm
+      elevated: true
+  - name: windows2012-r2-old
+    driver_config:
+    # NOTE: If you don't specify an out of date Azure URN there will not be
+    # any updates to apply. You can get a current list of 2012R2 URNs by running
+    # az vm image list --all --sku 2012-R2-Datacenter
+      image_urn: MicrosoftWindowsServer:WindowsServer:2012-R2-Datacenter:4.127.20170510
+      vm_name: 2012r2-old
+    transport:
+      name: winrm
+      elevated: true
 
 suites:
-  - name: default
+  - name: server
     run_list:
-      - recipe[wsus::default]
+      - recipe[wsus::server]
     verifier:
       inspec_tests:
         - test/smoke/default
     attributes:
+    excludes:
+      - windows2012-r2-old
+  - name: client
+    run_list:
+      - recipe[wsus::client]
+    verifier:
+      inspec_tests:
+        - test/smoke/default
+    attributes:
+      wsus_client:
+      # NOTE: this needs to be set on each run, the DNS entry from the AzureRM driver creates
+      # as kitchen-[driver UUID].[location].cloudapp.azure.com 
+      # the UUID can be found in .kitchen/server-windows2012-r2.yml
+      # Don't forget to include 'http://' and ':8530' in the WSUS server string
+        wsus_server: "http://kitchen-9ac9b814b2bb8c44.centralus.cloudapp.azure.com:8530"
+      
