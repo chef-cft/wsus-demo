@@ -19,5 +19,5 @@ chef_version '>= 12.1' if respond_to?(:chef_version)
 #
 # source_url 'https://github.com/<insert_org_here>/wsus'
 
-depends 'wsus-server', '=2.2.0'
-depends 'wsus-client', '=2.0.0'
+depends 'wsus-server', '=2.3.2'
+depends 'wsus-client', '=2.0.3'
