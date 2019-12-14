@@ -1,21 +1,30 @@
 ---
 driver:
   name: azurerm
+  azure_resource_group_prefix: kitchen-<%= ENV['USER'] %>-
+  resource_group_tags: &tags
+    X-Contact: <%= ENV['USER'] %>
+    X-Application: <%= ENV['X_APPLICATION'] %>
+    X-Dept: <%= ENV['X_DEPT'] %>
+    X-Customer: "Test-Kitchen"
+    X-Project: "Test-Kitchen"
+    X-TTL: 6
+  vm_tags: *tags
 
 driver_config:
-  subscription_id: '00000000-YOUR-GUID-HERE-000000000000'
-  location: 'Central US'
-  machine_size: ''Standard_D3_v2''
+  subscription_id: <%= ENV['AZURE_SUBSCRIPTION_ID'] %>
+  location: <%= ENV['AZURE_LOCATION'] %>
+  machine_size: 'Standard_D2_v2'
 
 provisioner:
   name: chef_zero
-  retry_on_exit_code: 
+  retry_on_exit_code:
     - [35, 37, 41]
   max_retries: 15
-  wait_for_retry: 600  
+  wait_for_retry: 600
   client_rb:
     exit_status: enabled
-    client_fork: false 
+    client_fork: false
 
 platforms:
   - name: windows2012-r2-latest
@@ -30,7 +39,7 @@ platforms:
     # NOTE: If you don't specify an out of date Azure URN there will not be
     # any updates to apply. You can get a current list of 2012R2 URNs by running
     # az vm image list --all --sku 2012-R2-Datacenter
-      image_urn: MicrosoftWindowsServer:WindowsServer:2012-R2-Datacenter:4.127.20170510
+      image_urn: MicrosoftWindowsServer:WindowsServer:2012-R2-Datacenter:4.127.20180315
       vm_name: 2012r2-old
     transport:
       name: winrm
@@ -55,8 +64,7 @@ suites:
     attributes:
       wsus_client:
       # NOTE: this needs to be set on each run, the DNS entry from the AzureRM driver creates
-      # as kitchen-[driver UUID].[location].cloudapp.azure.com 
+      # as kitchen-[driver UUID].[location].cloudapp.azure.com
       # the UUID can be found in .kitchen/server-windows2012-r2.yml
       # Don't forget to include 'http://' and ':8530' in the WSUS server string
-        wsus_server: "http://kitchen-87c454246ba8713e.centralus.cloudapp.azure.com:8530"
-      
+        wsus_server: "http://kitchen-291bfe99183a2e8a.centralus.cloudapp.azure.com:8530"
